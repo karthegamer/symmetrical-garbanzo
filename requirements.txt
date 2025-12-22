@@ -1,0 +1,5 @@
+Flask==3.0.0
+requests==2.31.0
+geopandas==0.14.1
+shapely==2.0.2
+pandas==2.1.4

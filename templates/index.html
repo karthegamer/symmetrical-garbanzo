@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flood Hazard Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            text-align: center;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 32px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 20px 0;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        #results {
+            margin-top: 30px;
+        }
+        #hazard-text {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #333;
+        }
+        #map-image {
+            max-width: 100%;
+            height: auto;
+            margin-top: 20px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+        }
+        .loading {
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>Flood Hazard Checker</h1>
+    <p>Check the flood hazard level for your location</p>
+
+    <button id="checkButton" onclick="getFloodHazard()">Get Flood Hazard</button>
+
+    <div id="results" style="display: none;">
+        <div id="hazard-text"></div>
+        <img id="map-image" src="" alt="Flood hazard map">
+    </div>
+
+    <script>
+        async function getFloodHazard() {
+            const button = document.getElementById('checkButton');
+            const results = document.getElementById('results');
+            const hazardText = document.getElementById('hazard-text');
+            const mapImage = document.getElementById('map-image');
+
+            button.disabled = true;
+            button.textContent = 'Loading...';
+            hazardText.textContent = 'Analyzing your location...';
+            hazardText.className = 'loading';
+            results.style.display = 'block';
+            mapImage.style.display = 'none';
+
+            try {
+                const response = await fetch('/check_flood_hazard');
+                const data = await response.json();
+
+                if (data.error) {
+                    hazardText.textContent = 'Error: ' + data.error;
+                    hazardText.className = '';
+                } else {
+                    hazardText.textContent = data.hazard;
+                    hazardText.className = '';
+                    mapImage.src = '/map?' + new Date().getTime();
+                    mapImage.style.display = 'block';
+                }
+            } catch (error) {
+                hazardText.textContent = 'Error: ' + error.message;
+                hazardText.className = '';
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Get Flood Hazard';
+            }
+        }
+    </script>
+</body>
+</html>
